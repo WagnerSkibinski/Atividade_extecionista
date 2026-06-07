@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Beneficios | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Beneficios para {{ doador.usuario.get_full_name|default:doador.usuario.username }}</h2>
+    <p>Total de doacoes validadas: <strong>{{ total_validadas }}</strong></p>
+</section>
+
+<section class="grid cards-2">
+    <article class="card">
+        <h3>Elegiveis</h3>
+        <ul>
+            {% for beneficio in beneficios_elegiveis %}
+                <li>
+                    <strong>{{ beneficio.titulo }}</strong> - {{ beneficio.empresa.nome }}
+                    {% if user.is_staff %}
+                        <form method="post" action="{% url 'beneficio-conceder' doador.id beneficio.id %}" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit">Conceder</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>Nenhum beneficio elegivel no momento.</li>
+            {% endfor %}
+        </ul>
+    </article>
+
+    <article class="card">
+        <h3>Ainda indisponiveis</h3>
+        <ul>
+            {% for beneficio in beneficios_indisponiveis %}
+                <li>{{ beneficio.titulo }} (minimo {{ beneficio.minimo_doacoes_validadas }} doacoes validadas)</li>
+            {% empty %}
+                <li>Nenhum beneficio pendente.</li>
+            {% endfor %}
+        </ul>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Nova doacao | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+    <h2>Registrar doacao</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+</section>
+{% endblock %}

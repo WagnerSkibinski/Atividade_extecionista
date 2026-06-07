@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="grid cards-4">
+    <article class="card metric"><h3>Doadores</h3><p>{{ total_doadores }}</p></article>
+    <article class="card metric"><h3>Doacoes</h3><p>{{ total_doacoes }}</p></article>
+    <article class="card metric"><h3>Validadas</h3><p>{{ total_doacoes_validadas }}</p></article>
+    <article class="card metric"><h3>Empresas Ativas</h3><p>{{ total_empresas }}</p></article>
+</section>
+
+<section class="grid cards-2">
+    <article class="card">
+        <h2>Ultimas doacoes</h2>
+        <ul>
+            {% for doacao in ultimas_doacoes %}
+                <li>{{ doacao.data_doacao }} - {{ doacao.doador.usuario.get_full_name|default:doacao.doador.usuario.username }} ({{ doacao.status }})</li>
+            {% empty %}
+                <li>Nenhuma doacao registrada.</li>
+            {% endfor %}
+        </ul>
+    </article>
+
+    <article class="card">
+        <h2>Top doadores</h2>
+        <ul>
+            {% for doador in top_doadores %}
+                <li>{{ doador.usuario.get_full_name|default:doador.usuario.username }} - {{ doador.qtd_validadas }} validadas</li>
+            {% empty %}
+                <li>Nenhum doador cadastrado.</li>
+            {% endfor %}
+        </ul>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Doacoes | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="row-between">
+        <h2>Registro de doacoes</h2>
+        <a class="button" href="{% url 'doacao-create' %}">Nova doacao</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Doador</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Acoes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doacao in doacoes %}
+                <tr>
+                    <td>{{ doacao.id }}</td>
+                    <td>{{ doacao.doador.usuario.get_full_name|default:doacao.doador.usuario.username }}</td>
+                    <td>{{ doacao.data_doacao }}</td>
+                    <td>{{ doacao.get_status_display }}</td>
+                    <td>
+                        {% if doacao.status == 'pendente' and user.is_staff %}
+                            <form method="post" action="{% url 'doacao-validar' doacao.id %}" class="inline-form">
+                                {% csrf_token %}
+                                <button type="submit">Validar</button>
+                            </form>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">Nenhuma doacao registrada.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

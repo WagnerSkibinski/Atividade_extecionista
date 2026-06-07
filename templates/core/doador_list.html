@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Doadores | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Doadores cadastrados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Tipo sanguineo</th>
+                <th>Doacoes validadas</th>
+                <th>Acoes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doador in doadores %}
+                <tr>
+                    <td>{{ doador.usuario.get_full_name|default:doador.usuario.username }}</td>
+                    <td>{{ doador.cpf }}</td>
+                    <td>{{ doador.tipo_sanguineo }}</td>
+                    <td>{{ doador.total_doacoes_validadas }}</td>
+                    <td><a href="{% url 'beneficios-disponiveis' doador.id %}">Beneficios</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">Nenhum doador cadastrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
