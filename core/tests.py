@@ -29,12 +29,11 @@ class ElegibilidadeBeneficioTestCase(TestCase):
 			empresa=empresa,
 			titulo="Desconto em medicamentos",
 			descricao="10% de desconto para doadores elegiveis",
-			minimo_doacoes_validadas=2,
+			minimo_doacoes_validadas=1,
 			ativo=True,
 		)
 
-	def test_doador_fica_elegivel_apos_duas_doacoes_validadas(self):
-		Doacao.objects.create(doador=self.doador, status=Doacao.STATUS_VALIDADA)
+	def test_doador_fica_elegivel_apos_uma_doacao_validada(self):
 		Doacao.objects.create(doador=self.doador, status=Doacao.STATUS_VALIDADA)
 
 		self.assertGreaterEqual(

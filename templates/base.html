@@ -10,16 +10,37 @@
 <body>
     <header class="site-header">
         <div class="container">
-            <h1>Hemepar Solidario</h1>
+            <h1>Hemepar Solidário</h1>
             <nav>
                 <a href="{% url 'home' %}">Inicio</a>
-                <a href="{% url 'doador-list' %}">Doadores</a>
-                <a href="{% url 'doacao-list' %}">Doacoes</a>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and is_empresa %}
+                    <a href="{% url 'gerenciar-empresa' %}">Minha empresa</a>
+                    <a href="{% url 'cadastro-brinde' %}">Anunciar brinde</a>
+                    <span class="nav-empresa">Area da empresa</span>
                     <form method="post" action="{% url 'logout' %}" class="inline-form">
                         {% csrf_token %}
                         <button type="submit">Sair</button>
                     </form>
+                {% elif user.is_authenticated and is_doador %}
+                    <a href="{% url 'cadastro-empresa' %}">Sou empresa</a>
+                    <a href="{% url 'meu-perfil' %}">Meu perfil</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'doador-list' %}">Doadores</a>
+                        <a href="{% url 'doacao-list' %}">Doacoes</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit">Sair</button>
+                    </form>
+                {% elif user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit">Sair</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'cadastro-empresa' %}">Sou empresa</a>
+                    <a href="{% url 'login' %}">Entrar</a>
+                    <a class="button" href="{% url 'cadastro' %}">Cadastre-se</a>
                 {% endif %}
             </nav>
         </div>
@@ -35,5 +56,23 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer-grid">
+            <div>
+                <h4>Hemepar Solidario</h4>
+                <p>&copy; {% now "Y" %} Hemepar Solidario. Todos os direitos reservados.</p>
+            </div>
+            <div>
+                <h4>Empresa responsavel</h4>
+                <p>Projeto Extencionista - Hemepar Curitiba</p>
+            </div>
+            <div>
+                <h4>Contato</h4>
+                <p>E-mail: <a href="mailto:contato@hemeparsolidario.org">contato@hemeparsolidario.org</a></p>
+                <p>Telefone: <a href="tel:+554133330000">(41) 3333-0000</a></p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

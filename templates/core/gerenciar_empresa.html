@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciar Empresa | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="grid cards-2">
+    <article class="card form-card">
+        <h2>Perfil da empresa</h2>
+        <p>Atualize nome, contato, foto e descricao do seu perfil.</p>
+        {% if empresa.foto %}
+            <img src="{{ empresa.foto.url }}" alt="Foto de {{ empresa.nome }}" class="company-photo" />
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ perfil_form.as_p }}
+            <button type="submit">Salvar perfil</button>
+        </form>
+    </article>
+
+    <article class="card">
+        <h2>Proximos passos</h2>
+        <ul>
+            <li>Adicione uma imagem para destacar sua empresa.</li>
+            <li>Escreva uma descricao curta para atrair doadores.</li>
+            <li>Depois anuncie brindes no sistema.</li>
+        </ul>
+        <a class="button" href="{% url 'cadastro-brinde' %}">Adicionar brinde</a>
+    </article>
+</section>
+
+<section class="card">
+    <h3>Brindes cadastrados</h3>
+    <ul>
+        {% for beneficio in beneficios %}
+            <li>
+                <strong>{{ beneficio.titulo }}</strong>
+                {% if beneficio.foto %}
+                    <div><img src="{{ beneficio.foto.url }}" alt="Foto do brinde {{ beneficio.titulo }}" class="company-photo company-photo--small" /></div>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>Nenhum brinde cadastrado ainda.</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

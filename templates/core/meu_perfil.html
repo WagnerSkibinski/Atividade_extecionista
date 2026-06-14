@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu perfil | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Meu perfil de doador</h2>
+    <p><strong>{{ doador.usuario.get_full_name|default:doador.usuario.username }}</strong> - Tipo sanguineo: {{ doador.tipo_sanguineo }}</p>
+    <p>Aqui voce pode comprovar uma nova doacao para validacao da equipe.</p>
+</section>
+
+
+{% comment %} comprova doação att.3 {% endcomment %}
+<section class="grid cards-2">
+    <article class="card form-card">
+
+        <h3>Comprovar doacao</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ comprovacao_form.as_p }}
+            <button type="submit">Enviar comprovacao</button>
+        </form>
+    </article>
+{% comment %} parte do layout (verificar bug de div) {% endcomment %}
+    <article class="card">
+        <h3>Ultimos resgates</h3>
+        <ul class="resgates-lista">
+            {% for resgate in resgates %}
+                <li>
+                    <a href="{% url 'beneficio-detalhe' resgate.beneficio.id %}" class="resgate-item-link">
+                        {% if resgate.beneficio.foto %}
+                            <img
+                                src="{{ resgate.beneficio.foto.url }}"
+                                alt="Miniatura do brinde {{ resgate.beneficio.titulo }}"
+                                class="resgate-thumb"
+                            />
+                        {% else %}
+                            <div class="resgate-thumb resgate-thumb--placeholder">Sem imagem</div>
+                        {% endif %}
+                        <span>
+                            <strong>{{ resgate.beneficio.titulo }}</strong><br />
+                            {{ resgate.beneficio.empresa.nome }}
+                        </span>
+                    </a>
+                </li>
+            {% empty %}
+                <li>Voce ainda nao resgatou brindes.</li>
+            {% endfor %}
+        </ul>
+    </article>
+</section>
+
+{% comment %} Historico de doacoes att.3 {% endcomment %}
+<section class="card">
+    <h3>Historico de doacoes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Local</th>
+                <th>Status</th>
+                <th>Comprovante</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doacao in doacoes %}
+                <tr>
+                    <td>{{ doacao.data_doacao }}</td>
+                    <td>{{ doacao.local }}</td>
+                    <td>{{ doacao.get_status_display }}</td>
+                    <td>
+                        {% if doacao.comprovante %}
+                            <a href="{{ doacao.comprovante.url }}" target="_blank" rel="noopener">Ver arquivo</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">Nenhuma doacao registrada.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,35 +1,128 @@
 {% extends 'base.html' %}
 
-{% block title %}Painel | Hemepar Solidario{% endblock %}
+{% block title %}Inicio | Hemepar Solidario{% endblock %}
 
 {% block content %}
-<section class="grid cards-4">
-    <article class="card metric"><h3>Doadores</h3><p>{{ total_doadores }}</p></article>
-    <article class="card metric"><h3>Doacoes</h3><p>{{ total_doacoes }}</p></article>
-    <article class="card metric"><h3>Validadas</h3><p>{{ total_doacoes_validadas }}</p></article>
-    <article class="card metric"><h3>Empresas Ativas</h3><p>{{ total_empresas }}</p></article>
+
+{% comment %} Selção inicial {% endcomment %}
+<section class="hero card">
+    <div>
+        <h2>Doar sangue salva vidas todos os dias</h2>
+        <p>
+            Seja parte da corrente do bem no Hemepar Curitiba. Seu cadastro ajuda no controle das doacoes,
+            fortalece a saude publica e conecta voce a empresas parceiras que reconhecem esse gesto.
+        </p>
+    </div>
 </section>
 
+{% comment %} Banner (possivel editar no admin) {% endcomment %}
+{% if banner_topo %}
+<section class="banner-topo card">
+    {% if banner_topo.link %}
+        <a href="{{ banner_topo.link }}" target="_blank" rel="noopener">
+            <img src="{{ banner_topo.imagem.url }}" alt="{{ banner_topo.titulo }}" class="banner-topo-image" />
+        </a>
+    {% else %}
+        <img src="{{ banner_topo.imagem.url }}" alt="{{ banner_topo.titulo }}" class="banner-topo-image" />
+    {% endif %}
+</section>
+{% endif %}
+
+{% comment %} Grid de cards de informacoes {% endcomment %}
+<section class="hero card">
+    {% comment %} <article class="card impact-card"> {% endcomment %}
+    {% comment %} <article class="hero card"> {% endcomment %}
+        <h2>Por que doar sangue e importante?</h2>
+        <ul>
+            <li>Cada doacao pode ajudar ate 4 pessoas.</li>
+            <li>Hospitais e hemocentros dependem de estoques regulares.</li>
+            <li>Doar e um ato de cidadania com impacto social imediato.</li>
+        </ul>
+    {% comment %} </article> {% endcomment %}
+</section>
+
+
+{% comment %}  Sem uso momentaneo {% endcomment %}
+
+{% comment %} <section class="card" id="empresas">
+    <h3>Empresas parceiras</h3>
+    <p>
+        Sua empresa quer apoiar essa causa? <a href="{% url 'cadastro-empresa' %}">Cadastre-se primeiro</a> e depois anuncie seu brinde.
+    </p>
+    <ul>
+        {% for empresa in empresas %}
+            <li>
+                <strong>{{ empresa.nome }}</strong> - contato: {{ empresa.contato }}
+                {% if empresa.foto %}
+                    <div><img src="{{ empresa.foto.url }}" alt="Foto de {{ empresa.nome }}" class="company-photo company-photo--small" /></div>
+                {% endif %}
+                {% if empresa.descricao %}
+                    <div>{{ empresa.descricao }}</div>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>Nenhuma empresa parceira cadastrada no momento.</li>
+        {% endfor %}
+    </ul>
+</section> {% endcomment %}
+
+{% comment %} Parte de seleção dos brindes {% endcomment %}
+<section class="card" id="brindes">
+    <h3>Vitrine de brindes para doadores</h3>
+    <p>Veja os brindes cadastrados pelas empresas parceiras. Com uma doacao validada, voce ja pode liberar seus beneficios.</p>
+    <div class="gift-grid">
+        {% for item in beneficios_publicos %}
+            <a class="gift-card-link" href="{% url 'beneficio-detalhe' item.beneficio.id %}">
+                <article class="gift-card">
+                    {% if item.beneficio.foto %}
+                        <img src="{{ item.beneficio.foto.url }}" alt="Foto do brinde {{ item.beneficio.titulo }}" class="gift-image" />
+                    {% else %}
+                        <div class="gift-image gift-image--placeholder">Sem imagem</div>
+                    {% endif %}
+
+                    <div class="gift-content">
+                        <h4>{{ item.beneficio.titulo }}</h4>
+                        <p class="gift-company">{{ item.beneficio.empresa.nome }}</p>
+                        <p>{{ item.beneficio.descricao }}</p>
+                        {% if user.is_authenticated and item.elegivel %}
+                            <span class="badge-success">Disponivel agora</span>
+                        {% elif user.is_authenticated %}
+                            <span class="badge-muted">Disponivel apos 1 doacao validada</span>
+                        {% else %}
+                            <span class="badge-muted">Cadastre-se e doe para liberar</span>
+                        {% endif %}
+                        <p class="gift-link-cta">Ver detalhes</p>
+                    </div>
+                </article>
+            </a>
+        {% empty %}
+            <p>Sem brindes cadastrados no momento.</p>
+        {% endfor %}
+    </div>
+
+    {% comment %} {% if user.is_authenticated and doador_logado %}
+        <a class="button" href="{% url 'beneficios-disponiveis' doador_logado.id %}">Ver meus beneficios</a>
+    {% endif %} {% endcomment %}
+</section>
+
+
+{% comment %} guia de uso para usuario {% endcomment %}
 <section class="grid cards-2">
     <article class="card">
-        <h2>Ultimas doacoes</h2>
-        <ul>
-            {% for doacao in ultimas_doacoes %}
-                <li>{{ doacao.data_doacao }} - {{ doacao.doador.usuario.get_full_name|default:doacao.doador.usuario.username }} ({{ doacao.status }})</li>
-            {% empty %}
-                <li>Nenhuma doacao registrada.</li>
-            {% endfor %}
-        </ul>
+        <h3>Como comprovar sua doacao?</h3>
+        <ol>
+            <li>Doe sangue no Hemepar.</li>
+            <li>O profissional registra e valida sua doacao no sistema.</li>
+            <li>Com a validacao, os brindes elegiveis ficam disponiveis.</li>
+        </ol>
     </article>
 
     <article class="card">
-        <h2>Top doadores</h2>
+        <h3>Quem utiliza o sistema</h3>
         <ul>
-            {% for doador in top_doadores %}
-                <li>{{ doador.usuario.get_full_name|default:doador.usuario.username }} - {{ doador.qtd_validadas }} validadas</li>
-            {% empty %}
-                <li>Nenhum doador cadastrado.</li>
-            {% endfor %}
+            <li>Doadores de sangue cadastrados.</li>
+            <li>Profissionais responsaveis por registro e validacao.</li>
+            <li>Empresas locais parceiras na concessao de beneficios.</li>
         </ul>
     </article>
 </section>

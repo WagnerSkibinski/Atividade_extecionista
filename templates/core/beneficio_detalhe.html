@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ beneficio.titulo }} | Hemepar Solidario{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="gift-detail">
+        <div>
+            {% if beneficio.foto %}
+                <img src="{{ beneficio.foto.url }}" alt="Foto do brinde {{ beneficio.titulo }}" class="gift-detail-image" />
+            {% else %}
+                <div class="gift-image gift-image--placeholder gift-detail-image">Sem imagem</div>
+            {% endif %}
+        </div>
+        {% comment %} resgate de brinde (somente com login e doação ativa para resgate) {% endcomment %}
+        <div>
+            <h2>{{ beneficio.titulo }}</h2>
+            <p class="gift-company">Empresa: {{ beneficio.empresa.nome }}</p>
+            <p>{{ beneficio.descricao }}</p>
+            {% if beneficio.codigo_cupom and doador_logado and ja_resgatado %}
+                <p><strong>Cupom:</strong> {{ beneficio.codigo_cupom }}</p>
+            {% elif beneficio.codigo_cupom and doador_logado and not ja_resgatado %}
+                <p><span class="badge-muted">O codigo do cupom sera exibido apos o resgate.</span></p>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                {% if doador_logado %}
+                    {% if ja_resgatado %}
+                        <p><span class="badge-success">Voce ja resgatou este brinde</span></p>
+                    {% elif elegivel %}
+                        <form method="post" action="{% url 'beneficio-resgatar' beneficio.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Resgatar brinde</button>
+                        </form>
+                    {% else %}
+                        <p><span class="badge-muted">Disponivel apos 1 doacao validada</span></p>
+                    {% endif %}
+                    {% comment %} check para não permitir não doadores {% endcomment %}
+                {% else %}
+                    <p><span class="badge-muted">Apenas doadores cadastrados podem resgatar brindes.</span></p>
+                {% endif %}
+            {% else %}
+                <p><span class="badge-muted">Faca login para solicitar este brinde.</span></p>
+                <a class="button" href="{% url 'login' %}">Entrar para resgatar</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

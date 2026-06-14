@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro de Empresa | Hemepar Solidario{% endblock %}
+
+{% block content %}
+
+{% comment %} Cadastro de empresa (forms simples) {% endcomment %}
+<section class="card form-card">
+    <h2>Cadastro de empresa parceira</h2>
+    <p>Crie a conta da sua empresa (usuario e senha). Depois voce sera direcionado para anunciar o primeiro brinde.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ empresa_form.as_p }}
+        <button type="submit">Criar conta da empresa</button>
+    </form>
+</section>
+{% endblock %}

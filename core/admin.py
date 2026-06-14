@@ -1,6 +1,21 @@
 from django.contrib import admin
 
-from .models import Beneficio, Doacao, Doador, EmpresaParceira, ResgateBeneficio
+from .models import BannerPropaganda, Beneficio, Doacao, Doador, EmpresaParceira, PerfilUsuario, ResgateBeneficio
+
+
+@admin.register(PerfilUsuario)
+class PerfilUsuarioAdmin(admin.ModelAdmin):
+	list_display = ("usuario", "tipo", "criado_em")
+	search_fields = ("usuario__username", "usuario__first_name", "usuario__email")
+	list_filter = ("tipo",)
+
+
+@admin.register(BannerPropaganda)
+class BannerPropagandaAdmin(admin.ModelAdmin):
+	list_display = ("titulo", "ativo", "ordem", "criado_em")
+	search_fields = ("titulo",)
+	list_filter = ("ativo",)
+	ordering = ("ordem", "-criado_em")
 
 
 @admin.register(Doador)

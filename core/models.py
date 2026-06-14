@@ -12,6 +12,46 @@ class TimestampedModel(models.Model):
 		abstract = True
 
 
+class PerfilUsuario(TimestampedModel):
+	TIPO_DOADOR = "doador"
+	TIPO_EMPRESA = "empresa"
+
+	TIPOS = [
+		(TIPO_DOADOR, "Doador"),
+		(TIPO_EMPRESA, "Empresa"),
+	]
+
+	usuario = models.OneToOneField(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.CASCADE,
+		related_name="perfil_usuario",
+	)
+	tipo = models.CharField(max_length=10, choices=TIPOS)
+
+	class Meta:
+		verbose_name = "Perfil de Usuario"
+		verbose_name_plural = "Perfis de Usuario"
+
+	def __str__(self):
+		return f"{self.usuario.username} ({self.tipo})"
+
+
+class BannerPropaganda(TimestampedModel):
+	titulo = models.CharField(max_length=120)
+	imagem = models.ImageField(upload_to="banners/")
+	link = models.URLField(blank=True)
+	ativo = models.BooleanField(default=True)
+	ordem = models.PositiveIntegerField(default=0)
+
+	class Meta:
+		verbose_name = "Banner de Propaganda"
+		verbose_name_plural = "Banners de Propaganda"
+		ordering = ["ordem", "-criado_em"]
+
+	def __str__(self):
+		return self.titulo
+
+
 class Doador(TimestampedModel):
 	TIPOS_SANGUINEOS = [
 		("A+", "A+"),
@@ -44,14 +84,23 @@ class Doador(TimestampedModel):
 
 
 class EmpresaParceira(TimestampedModel):
+	usuario = models.OneToOneField(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.SET_NULL,
+		null=True,
+		blank=True,
+		related_name="empresa_perfil",
+	)
 	nome = models.CharField(max_length=120)
 	cnpj = models.CharField(max_length=18, unique=True)
 	contato = models.CharField(max_length=120)
+	descricao = models.TextField(blank=True)
+	foto = models.ImageField(upload_to="empresas/", blank=True, null=True)
 	ativa = models.BooleanField(default=True)
 
 	class Meta:
 		verbose_name = "Empresa Parceira"
-		verbose_name_plural = "Empresas Parceiras"
+		verbose_name_plural = "Empresas Parceiras"   
 
 	def __str__(self):
 		return self.nome
@@ -61,10 +110,12 @@ class Beneficio(TimestampedModel):
 	empresa = models.ForeignKey(EmpresaParceira, on_delete=models.CASCADE, related_name="beneficios")
 	titulo = models.CharField(max_length=120)
 	descricao = models.TextField()
+	codigo_cupom = models.CharField(max_length=60, blank=True)
+	foto = models.ImageField(upload_to="beneficios/", blank=True, null=True)
 	minimo_doacoes_validadas = models.PositiveIntegerField(
 		default=1,
 		validators=[MinValueValidator(1)],
-		help_text="Quantidade minima de doacoes validadas para concessao.",
+		help_text="Mantido para compatibilidade; a regra ativa considera 1 doacao validada.",
 	)
 	ativo = models.BooleanField(default=True)
 
@@ -93,6 +144,7 @@ class Doacao(TimestampedModel):
 	volume_ml = models.PositiveIntegerField(default=450)
 	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDENTE)
 	observacao = models.TextField(blank=True)
+	comprovante = models.FileField(upload_to="comprovantes/", blank=True, null=True)
 	validada_por = models.ForeignKey(
 		settings.AUTH_USER_MODEL,
 		on_delete=models.SET_NULL,
