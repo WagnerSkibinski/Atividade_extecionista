@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from .models import Beneficio, Doador, Doacao, EmpresaParceira, PerfilUsuario
 
+
 #Forms para utilidades nas paginas de registro (diferenciar por nomenclatura) 
 
 

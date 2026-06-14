@@ -16,6 +16,7 @@ class PerfilUsuario(TimestampedModel):
 	TIPO_DOADOR = "doador"
 	TIPO_EMPRESA = "empresa"
 
+# Diferenciar tipo de usuario e telas mostradas 
 	TIPOS = [
 		(TIPO_DOADOR, "Doador"),
 		(TIPO_EMPRESA, "Empresa"),
@@ -35,10 +36,11 @@ class PerfilUsuario(TimestampedModel):
 	def __str__(self):
 		return f"{self.usuario.username} ({self.tipo})"
 
-
+# Editar no admin o banner da pagina principal
 class BannerPropaganda(TimestampedModel):
 	titulo = models.CharField(max_length=120)
 	imagem = models.ImageField(upload_to="banners/")
+#  link (possivel uso futuro)
 	link = models.URLField(blank=True)
 	ativo = models.BooleanField(default=True)
 	ordem = models.PositiveIntegerField(default=0)
@@ -51,8 +53,10 @@ class BannerPropaganda(TimestampedModel):
 	def __str__(self):
 		return self.titulo
 
-
+# usuario tipo doador
 class Doador(TimestampedModel):
+	
+ 	# tipos de sangue para doadores (mudar para editar no admin futuramente)
 	TIPOS_SANGUINEOS = [
 		("A+", "A+"),
 		("A-", "A-"),
@@ -83,6 +87,7 @@ class Doador(TimestampedModel):
 		return self.doacoes.filter(status=Doacao.STATUS_VALIDADA).count()
 
 
+# usuario tipo empresa (cadastro diferente de doador)
 class EmpresaParceira(TimestampedModel):
 	usuario = models.OneToOneField(
 		settings.AUTH_USER_MODEL,
@@ -126,9 +131,10 @@ class Beneficio(TimestampedModel):
 	def __str__(self):
 		return f"{self.titulo} ({self.empresa.nome})"
 
-
+# validação de doador para o usuario 
 class Doacao(TimestampedModel):
 	STATUS_PENDENTE = "pendente"
+ 
 	STATUS_VALIDADA = "validada"
 	STATUS_REJEITADA = "rejeitada"
 
@@ -168,7 +174,7 @@ class Doacao(TimestampedModel):
 		self.data_validacao = timezone.now()
 		self.save(update_fields=["status", "validada_por", "data_validacao", "atualizado_em"])
 
-
+# Resgate de beneficios
 class ResgateBeneficio(TimestampedModel):
 	doador = models.ForeignKey(Doador, on_delete=models.CASCADE, related_name="resgates")
 	beneficio = models.ForeignKey(Beneficio, on_delete=models.CASCADE, related_name="resgates")
